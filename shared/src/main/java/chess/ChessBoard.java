@@ -23,7 +23,15 @@ public class ChessBoard {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(squares);
+        int code = 0;
+
+        for (int i = 0; i < squares.length; ++i) {
+            for (int j = 0; j < squares[i].length; ++j) {
+                code += (squares[i][j] != null ? squares[i][j].hashCode() : 71 ) * (i + 1) * (j + 1);
+            }
+        }
+
+        return code;
     }
 
     /**
