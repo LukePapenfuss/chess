@@ -25,8 +25,11 @@ public class ChessBoard {
     public int hashCode() {
         int code = 0;
 
+        // Loop through every square on the board
         for (int i = 0; i < squares.length; ++i) {
             for (int j = 0; j < squares[i].length; ++j) {
+                // If the square contains a piece, add to the hash code based on the code of the piece
+                // and the coordinate. If it is null, add a hash code based just on the coordinate.
                 code += (squares[i][j] != null ? squares[i][j].hashCode() : 71 ) * (i + 1) * (j + 1);
             }
         }
@@ -49,24 +52,27 @@ public class ChessBoard {
         // Check if all pieces are the same
         for (int i = 0; i < squares.length; ++i) {
             for (int j = 0; j < squares[i].length; ++j) {
-                if (squares[i][j] == null && that.getPiece(new ChessPosition(i+1,j+1)) != null) {
+                // Get piece we want to compare with
+                ChessPiece thatPiece = that.getPiece(new ChessPosition(i+1,j+1));
+
+                // If one piece is null and the other isn't, return false;
+                if ((squares[i][j] == null && thatPiece != null) || (squares[i][j] != null && thatPiece == null)) {
                     return false;
                 }
 
-                if (squares[i][j] != null && that.getPiece(new ChessPosition(i+1,j+1)) == null) {
-                    return false;
-                }
-
-                if (squares[i][j] == null && that.getPiece(new ChessPosition(i+1,j+1)) == null) {
+                // If both pieces are null, no need to compare pieces
+                if (squares[i][j] == null && thatPiece == null) {
                     continue;
                 }
 
-                if (!squares[i][j].equals(that.getPiece(new ChessPosition(i+1,j+1)))) {
+                // If both pieces are not null, return false if they are not the same piece
+                if (!squares[i][j].equals(thatPiece)) {
                     return false;
                 }
             }
         }
 
+        // Returns true when no differences were detected
         return true;
     }
 
