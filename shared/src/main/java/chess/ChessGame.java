@@ -54,11 +54,43 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         // Return null if no piece is at the start position
-        if (board.getPiece(startPosition) == null) return null;
+        if (board.getPiece(startPosition) == null) {
+            return null;
+        }
 
-        Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board, startPosition);
+        // Find the team color
+        ChessGame.TeamColor teamColor = board.getPiece(startPosition).getTeamColor();
 
-        return moves;
+        // Find all the basic moves that this piece can make
+        ArrayList<ChessMove> moves = (ArrayList<ChessMove>) board.getPiece(startPosition).pieceMoves(board, startPosition);
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
+
+        // Loop through the basic moves
+        for (int i = 0; i < moves.size(); ++i) {
+            // Create a new branch board
+            ChessGame branch = new ChessGame();
+            branch.setBoard(board);
+            
+            // Find the new piece if promoting
+            ChessPiece newPiece = moves.get(i).getPromotionPiece() == null ?
+                    branch.getBoard().getPiece(moves.get(i).getStartPosition()) :
+                    new ChessPiece(teamColor, moves.get(i).getPromotionPiece());
+            
+            // Move the piece hypothetically
+            branch.getBoard().addPiece(moves.get(i).getEndPosition(), newPiece);
+            
+            // Make the previous space empty
+            branch.getBoard().removePiece(moves.get(i).getStartPosition());
+            
+            // See if we are hypothetically in check
+            boolean invalidMove = branch.isInCheck(teamColor);
+            
+            if (!invalidMove) {
+                validMoves.add(moves.get(i));
+            }
+        }
+        
+        return validMoves;
     }
 
     /**
@@ -68,7 +100,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        
     }
 
     /**
@@ -122,7 +154,7 @@ public class ChessGame {
      * @param newBoard the new board to use
      */
     public void setBoard(ChessBoard newBoard) {
-        board = newBoard;
+        board.setBoard(newBoard);
         teamTurn = TeamColor.WHITE;
     }
 

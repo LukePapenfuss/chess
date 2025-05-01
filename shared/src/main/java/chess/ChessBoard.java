@@ -130,6 +130,15 @@ public class ChessBoard {
     }
 
     /**
+     * Removes a chess piece from the chessboard
+     *
+     * @param position where to remove the piece from
+     */
+    public void removePiece(ChessPosition position) {
+        squares[position.getRow()-1][position.getColumn()-1] = null;
+    }
+
+    /**
      * Gets a chess piece on the chessboard
      *
      * @param position The position to get the piece from
@@ -138,6 +147,29 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return squares[position.getRow()-1][position.getColumn()-1];
+    }
+
+    /**
+     * Sets the board to be a copy of the new board
+     *
+     * @param newBoard the board to be copied
+     */
+    public void setBoard(ChessBoard newBoard) {
+        squares = new ChessPiece[8][8];
+
+        // Copy all of the piece from a new board
+        for (int i = 0; i < squares.length; ++i) {
+            for (int j = 0; j < squares[i].length; ++j) {
+                ChessPosition pos = new ChessPosition(i + 1, j + 1);
+
+                if(newBoard.getPiece(pos) == null) continue;
+
+                ChessPiece newPiece = new ChessPiece(newBoard.getPiece(pos).getTeamColor(), newBoard.getPiece(pos).getPieceType());
+
+                addPiece(pos, newPiece);
+            }
+        }
+
     }
 
     /**
