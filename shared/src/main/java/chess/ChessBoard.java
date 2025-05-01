@@ -218,7 +218,9 @@ public class ChessBoard {
 
                     // Loop through all of this piece's moves. If it's end position is my position, we are attacked
                     for (int k = 0; k < pieceMoves.size(); k++) {
-                        if (pieceMoves.get(k).getEndPosition() == position) return true;
+                        if (position.equals(pieceMoves.get(k).getEndPosition())) {
+                            return true;
+                        }
                     }
                 }
 

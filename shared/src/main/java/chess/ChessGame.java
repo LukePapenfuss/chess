@@ -81,8 +81,6 @@ public class ChessGame {
         // Find the king
         ChessPosition kingPosition = board.findKing(teamColor);
 
-        System.out.println("\nKing's Position: " + kingPosition.toString());
-
         // Find all valid moves from the opponent
         return board.positionIsAttacked(kingPosition, (teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE));
     }
@@ -113,8 +111,8 @@ public class ChessGame {
      *
      * @param board the new board to use
      */
-    public void setBoard(ChessBoard board) {
-        board.resetBoard();
+    public void setBoard(ChessBoard newBoard) {
+        board = newBoard;
         teamTurn = TeamColor.WHITE;
     }
 
