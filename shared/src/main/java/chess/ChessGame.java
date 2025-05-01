@@ -130,11 +130,14 @@ public class ChessGame {
         // If we aren't in check, we aren't in checkmate
         if (!inCheck) return false;
 
-        // If we are in check, see if the king has any valid moves
-        ChessPosition kingPosition = board.findKing(teamColor);
+        // If we are in check, see if we have any valid moves
+        ArrayList<ChessPosition> myPieces = board.findAllPieces(teamColor);
+        for (int i = 0; i < myPieces.size(); ++i) {
+            if (!validMoves(myPieces.get(i)).isEmpty()) return false;
+        }
 
-        // Determine if king has any valid moves. If not, we are in checkmate
-        return validMoves(kingPosition).isEmpty();
+        // If no valid moves were found, we are in checkmate
+        return true;
     }
 
     /**

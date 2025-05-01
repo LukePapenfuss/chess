@@ -87,9 +87,9 @@ public class ChessBoard {
     public String toString() {
         String str = "";
 
-        for (int i = 0; i < squares.length; ++i) {
+        for (int i = squares.length-1; i >= 0; --i) {
             str += "|";
-            for (int j = 0; j < squares[i].length; ++j) {
+            for (int j = 0; j < squares.length; ++j) {
                 // Add empty space if null
                 if (squares[i][j] == null) {
                     str += " |";
@@ -228,6 +228,21 @@ public class ChessBoard {
             }
         }
         return null;
+    }
+
+    public ArrayList<ChessPosition> findAllPieces(ChessGame.TeamColor teamColor) {
+        ArrayList<ChessPosition> positions = new ArrayList<>();
+
+        for (int i = 0; i < squares.length; ++i) {
+            for (int j = 0; j < squares[i].length; ++j) {
+                ChessPiece piece = getPiece(new ChessPosition(i+1,j+1));
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    positions.add(new ChessPosition(i + 1,j + 1));
+                }
+            }
+        }
+
+        return positions;
     }
 
     /**
