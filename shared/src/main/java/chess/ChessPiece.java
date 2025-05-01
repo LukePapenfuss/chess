@@ -75,6 +75,26 @@ public class ChessPiece {
     }
 
     /**
+     * @return which type of chess piece this piece is in chess notation
+     */
+    public String pieceTypeNotation(PieceType thisType) {
+        String pieceStr = " ";
+
+        switch (getPieceType()) {
+            case KING -> pieceStr = "K";
+            case QUEEN -> pieceStr = "Q";
+            case ROOK -> pieceStr = "R";
+            case BISHOP -> pieceStr = "B";
+            case KNIGHT -> pieceStr = "N";
+            case PAWN -> pieceStr = "P";
+        }
+
+        if (getTeamColor() == ChessGame.TeamColor.BLACK) { pieceStr = pieceStr.toLowerCase(); }
+
+        return pieceStr;
+    }
+
+    /**
      * Mark the piece as having been moved from start
      */
     public void flagAsMoved() {

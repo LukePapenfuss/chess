@@ -100,7 +100,31 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        
+        // Find all valid moves for start position
+        ArrayList<ChessMove> possibleMoves = (ArrayList<ChessMove>) validMoves(move.getStartPosition());
+
+        boolean isValid = false;
+
+        // Loop through possible moves to see if this move is valid
+        for (int i = 0; i < possibleMoves.size(); ++i) {
+            if (possibleMoves.get(i).equals(move)) {
+                isValid = true;
+                break;
+            }
+        }
+
+        // If the move is not valid throw an exception
+        if (!isValid) throw new InvalidMoveException("Invalid move attempted: " + move);
+
+        // Get the piece to move
+        ChessPiece movingPiece = board.getPiece(move.getStartPosition());
+
+        // If promoting, change moving piece to promoted piece
+        if (move.getPromotionPiece() != null) movingPiece = new ChessPiece(movingPiece.getTeamColor(), move.getPromotionPiece());
+
+        // If the move is valid, make the move
+        board.addPiece(move.getEndPosition(), movingPiece);
+        board.removePiece(move.getStartPosition());
     }
 
     /**

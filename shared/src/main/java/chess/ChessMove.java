@@ -47,7 +47,7 @@ public class ChessMove {
     /**
      * Outputs a string showing the move in chess notation. Does not show promotion
      *
-     * @return String of the move in chess notation (ex. a2 -> b4)
+     * @return String of the move in chess notation (ex. Nb4)
      */
     @Override
     public String toString() {
