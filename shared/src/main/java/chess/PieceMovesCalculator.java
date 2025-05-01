@@ -222,22 +222,26 @@ class PawnMovesCalculator implements PieceMovesCalculator {
 
         // En Passant to the left
         ChessPosition leftAdj = new ChessPosition(myPosition.getRow(), myPosition.getColumn()-1);
-        ChessPiece leftAdjPiece = board.getPiece(leftAdj);
-        if (leftAdj.insideBoard() && myPosition.getRow() == (forward == 1 ? 6 : 4) && leftAdjPiece.getPieceType() == ChessPiece.PieceType.PAWN
-                && leftAdjPiece.getTeamColor() != board.getPiece(myPosition).getTeamColor() && leftAdjPiece.isEnPassantable()) {
+        if (leftAdj.insideBoard()) {
+            ChessPiece leftAdjPiece = board.getPiece(leftAdj);
+            if (leftAdjPiece != null && myPosition.getRow() == (forward == 1 ? 6 : 4) && leftAdjPiece.getPieceType() == ChessPiece.PieceType.PAWN
+                    && leftAdjPiece.getTeamColor() != board.getPiece(myPosition).getTeamColor() && leftAdjPiece.isEnPassantable()) {
 
-            // TODO: Add the move for en passant to the left
+                // TODO: Add the move for en passant to the left
 
+            }
         }
 
         // En Passant to the right
         ChessPosition rightAdj = new ChessPosition(myPosition.getRow(), myPosition.getColumn()+1);
-        ChessPiece rightAdjPiece = board.getPiece(rightAdj);
-        if (leftAdj.insideBoard() && myPosition.getRow() == (forward == 1 ? 6 : 4) && rightAdjPiece.getPieceType() == ChessPiece.PieceType.PAWN
-                && rightAdjPiece.getTeamColor() != board.getPiece(myPosition).getTeamColor() && rightAdjPiece.isEnPassantable()) {
+        if (rightAdj.insideBoard()) {
+            ChessPiece rightAdjPiece = board.getPiece(rightAdj);
+            if (rightAdjPiece != null && myPosition.getRow() == (forward == 1 ? 6 : 4) && rightAdjPiece.getPieceType() == ChessPiece.PieceType.PAWN
+                    && rightAdjPiece.getTeamColor() != board.getPiece(myPosition).getTeamColor() && rightAdjPiece.isEnPassantable()) {
 
-            // TODO: Add the move for en passant to the right
+                // TODO: Add the move for en passant to the right
 
+            }
         }
 
 
