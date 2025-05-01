@@ -75,7 +75,7 @@ public class ChessPosition {
      *
      * @return True if the position is on the board
      */
-    public boolean InsideBoard() {
+    public boolean insideBoard() {
         return row >= 1 && row <= 8 && col >= 1 && col <= 8;
     }
 

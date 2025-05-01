@@ -14,10 +14,14 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
+    private boolean moved;
+    private boolean enPassantable;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
+        moved = false;
+        enPassantable = false;
     }
 
     /**
@@ -68,6 +72,36 @@ public class ChessPiece {
      */
     public PieceType getPieceType() {
         return type;
+    }
+
+    /**
+     * Mark the piece as having been moved from start
+     */
+    public void flagAsMoved() {
+        moved = true;
+    }
+
+    /**
+     * @return whether the piece has been moved since the beginning
+     */
+    public boolean ifMoved() {
+        return moved;
+    }
+
+    /**
+     * Sets the state of the enParrantable variable
+     *
+     * @param ep whether the piece is en passantable
+     */
+    public void setEnPassantable(boolean ep) {
+        enPassantable = ep;
+    }
+
+    /**
+     * @return whether this pawn may be valid for en passant
+     */
+    public boolean isEnPassantable() {
+        return enPassantable;
     }
 
     /**
