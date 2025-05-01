@@ -92,7 +92,17 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        // Determine if we are in check
+        boolean inCheck = isInCheck(teamColor);
+
+        // If we aren't in check, we aren't in checkmate
+        if (!inCheck) return false;
+
+        // If we are in check, see if the king has any valid moves
+        ChessPosition kingPosition = board.findKing(teamColor);
+
+        // Determine if king has any valid moves. If not, we are in checkmate
+        return validMoves(kingPosition).isEmpty();
     }
 
     /**
@@ -109,7 +119,7 @@ public class ChessGame {
     /**
      * Sets this game's chessboard with a given board
      *
-     * @param board the new board to use
+     * @param newBoard the new board to use
      */
     public void setBoard(ChessBoard newBoard) {
         board = newBoard;
