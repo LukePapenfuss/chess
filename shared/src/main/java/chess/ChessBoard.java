@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -176,5 +178,53 @@ public class ChessBoard {
             ChessPiece newPiece = new ChessPiece(ChessGame.TeamColor.BLACK, backRank[i]);
             addPiece(new ChessPosition(8, i + 1), newPiece);
         }
+    }
+
+    /**
+     * Finds the king of a given team color on the board
+     *
+     * @param teamColor the color of the king to find
+     * @return the position of the found king (null if it is not found)
+     */
+    public ChessPosition findKing(ChessGame.TeamColor teamColor) {
+        for (int i = 0; i < squares.length; ++i) {
+            for (int j = 0; j < squares[i].length; ++j) {
+                ChessPiece piece = getPiece(new ChessPosition(i+1,j+1));
+                if (piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING) {
+                    return new ChessPosition(i + 1,j + 1);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Checks whether the position is attacked by the opposing team
+     *
+     * @param position the position we want to check for attacks
+     * @param attackingTeam the color of the attacking team
+     * @return whether the position is attacked
+     */
+    public boolean positionIsAttacked(ChessPosition position, ChessGame.TeamColor attackingTeam) {
+        // Loop through the board to find pieces of the opposing team
+        for (int i = 0; i < squares.length; ++i) {
+            for (int j = 0; j < squares[i].length; ++j) {
+                ChessPosition currentPosition = new ChessPosition(i+1,j+1);
+                ChessPiece piece = getPiece(currentPosition);
+
+                // If the piece exists and is the attacking team, find its moves.
+                if (piece != null && piece.getTeamColor() == attackingTeam) {
+                    ArrayList<ChessMove> pieceMoves = (ArrayList<ChessMove>) piece.pieceMoves(this, currentPosition);
+
+                    // Loop through all of this piece's moves. If it's end position is my position, we are attacked
+                    for (int k = 0; k < pieceMoves.size(); k++) {
+                        if (pieceMoves.get(k).getEndPosition() == position) return true;
+                    }
+                }
+
+            }
+        }
+
+        return false;
     }
 }
