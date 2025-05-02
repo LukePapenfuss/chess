@@ -90,7 +90,18 @@ public class ChessGame {
             ChessPiece newPiece = moves.get(i).getPromotionPiece() == null ?
                     branch.getBoard().getPiece(moves.get(i).getStartPosition()) :
                     new ChessPiece(teamColor, moves.get(i).getPromotionPiece());
-            
+
+            // If it is castling, move the rook too
+            if (branch.isCastling(moves.get(i)) != null) {
+                // Make a new rook
+                ChessPiece newRook = new ChessPiece(board.getPiece(startPosition).getTeamColor(), ChessPiece.PieceType.ROOK);
+                newRook.flagAsMoved();
+
+                // Place the rook
+                branch.getBoard().addPiece(new ChessPosition(moves.get(i).getEndPosition().getRow(), moves.get(i).getEndPosition().getColumn() + (branch.isCastling(moves.get(i)) == ChessPiece.PieceType.QUEEN ? 1 : -1)), newRook);
+                branch.getBoard().removePiece(new ChessPosition(moves.get(i).getEndPosition().getRow(), (branch.isCastling(moves.get(i)) == ChessPiece.PieceType.QUEEN ? 1 : 8)));
+            }
+
             // Move the piece hypothetically
             branch.getBoard().addPiece(moves.get(i).getEndPosition(), newPiece);
             
@@ -99,8 +110,6 @@ public class ChessGame {
             
             // See if we are hypothetically in check
             boolean invalidMove = branch.isInCheck(teamColor);
-
-            // System.out.println(branch.getBoard().toString());
             
             if (!invalidMove) {
                 validMoves.add(moves.get(i));
