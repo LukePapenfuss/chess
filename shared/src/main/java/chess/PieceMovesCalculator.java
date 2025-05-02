@@ -31,7 +31,7 @@ class KingMovesCalculator implements PieceMovesCalculator {
         }
 
         // Castling
-        if(!board.getPiece(myPosition).ifMoved()) {
+        if(!board.getPiece(myPosition).ifMoved() && myPosition.getColumn() == 5) {
             ChessGame.TeamColor opposingTeam = board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
 
             // If the king hasn't moved, check if the rooks haven't moved.

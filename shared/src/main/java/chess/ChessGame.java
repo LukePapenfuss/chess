@@ -113,7 +113,7 @@ public class ChessGame {
 
             // See if we are hypothetically in check
             boolean invalidMove = branch.isInCheck(teamColor);
-            
+
             if (!invalidMove) {
                 validMoves.add(moves.get(i));
             }
