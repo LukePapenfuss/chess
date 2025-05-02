@@ -176,6 +176,9 @@ public class ChessGame {
         board.addPiece(move.getEndPosition(), movingPiece);
         board.removePiece(move.getStartPosition());
 
+        // Set all en passant flags to false
+        board.resetEnPassant();
+
         // If the pawn moved 2 spaces, flag it as en passantable. If not, un-flag it
         movingPiece.setEnPassantable(movingPiece.getPieceType() == ChessPiece.PieceType.PAWN &&
                 Math.abs(move.getEndPosition().getRow() - move.getStartPosition().getRow()) > 1);
@@ -284,8 +287,6 @@ public class ChessGame {
      */
     public boolean isEnPassant(ChessMove move) {
         if (board.getPiece(move.getStartPosition()) == null) return false;
-
-        System.out.println();
 
         if (board.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN) {
             return move.getStartPosition().getRow() != move.getEndPosition().getRow() &&

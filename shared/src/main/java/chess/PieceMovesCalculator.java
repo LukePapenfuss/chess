@@ -243,7 +243,7 @@ class PawnMovesCalculator implements PieceMovesCalculator {
         ChessPosition leftAdj = new ChessPosition(myPosition.getRow(), myPosition.getColumn()-1);
         if (leftAdj.insideBoard()) {
             ChessPiece leftAdjPiece = board.getPiece(leftAdj);
-            if (leftAdjPiece != null && myPosition.getRow() == (forward == 1 ? 6 : 4) && leftAdjPiece.getPieceType() == ChessPiece.PieceType.PAWN
+            if (leftAdjPiece != null && myPosition.getRow() == (forward == 1 ? 5 : 4) && leftAdjPiece.getPieceType() == ChessPiece.PieceType.PAWN
                     && leftAdjPiece.getTeamColor() != board.getPiece(myPosition).getTeamColor() && leftAdjPiece.isEnPassantable()) {
                 possibleMoves.add(new ChessMove(myPosition, leftAttackPosition, null));
             }
@@ -260,7 +260,7 @@ class PawnMovesCalculator implements PieceMovesCalculator {
         }
 
 
-            // Promotion
+        // Promotion
         ArrayList<ChessMove> newPossibleMoves = new ArrayList<>();
         for (int i = 0; i < possibleMoves.toArray().length; ++i) {
             if(possibleMoves.get(i).getEndPosition().getRow() == (forward == 1 ? 8 : 1)) {

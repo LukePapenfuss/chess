@@ -276,4 +276,16 @@ public class ChessBoard {
 
         return false;
     }
+
+    /**
+     * Sets all pieces to not be en passantable
+     */
+    public void resetEnPassant() {
+        for (int i = 0; i < squares.length; ++i) {
+            for (int j = 0; j < squares[i].length; ++j) {
+                if (getPiece(new ChessPosition(i + 1, j + 1)) == null) continue;
+                getPiece(new ChessPosition(i + 1, j + 1)).setEnPassantable(false);
+            }
+        }
+    }
 }
