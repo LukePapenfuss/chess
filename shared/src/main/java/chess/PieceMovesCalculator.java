@@ -32,19 +32,38 @@ class KingMovesCalculator implements PieceMovesCalculator {
 
         // Castling
         if(!board.getPiece(myPosition).ifMoved()) {
+            ChessGame.TeamColor opposingTeam = board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+
             // If the king hasn't moved, check if the rooks haven't moved.
             ChessPiece leftCorner = board.getPiece(new ChessPosition(myPosition.getRow(), 1));
             if(leftCorner != null && leftCorner.getPieceType() == ChessPiece.PieceType.ROOK && !leftCorner.ifMoved()) {
+                // Make sure the path is clear and the king will never be in check
+                if (board.getPiece(new ChessPosition(myPosition.getRow(), 2)) == null &&
+                        board.getPiece(new ChessPosition(myPosition.getRow(), 3)) == null &&
+                        board.getPiece(new ChessPosition(myPosition.getRow(), 4)) == null &&
+                        !board.positionIsAttacked(new ChessPosition(myPosition.getRow(), 3), opposingTeam) &&
+                        !board.positionIsAttacked(new ChessPosition(myPosition.getRow(), 4), opposingTeam) &&
+                        !board.positionIsAttacked(myPosition, opposingTeam)) {
 
-                // TODO: Add a move for queen-side castling
-
+                    // Create the new move and mark the castling flag
+                    ChessMove newMove = new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), 3), null);
+                    possibleMoves.add(newMove);
+                }
             }
 
             ChessPiece rightCorner = board.getPiece(new ChessPosition(myPosition.getRow(), 8));
             if(rightCorner != null && rightCorner.getPieceType() == ChessPiece.PieceType.ROOK && !rightCorner.ifMoved()) {
+                // Make sure the path is clear and the king will never be in check
+                if (board.getPiece(new ChessPosition(myPosition.getRow(), 6)) == null &&
+                        board.getPiece(new ChessPosition(myPosition.getRow(), 7)) == null &&
+                        !board.positionIsAttacked(new ChessPosition(myPosition.getRow(), 6), opposingTeam) &&
+                        !board.positionIsAttacked(new ChessPosition(myPosition.getRow(), 7), opposingTeam) &&
+                        !board.positionIsAttacked(myPosition, opposingTeam)) {
 
-                // TODO: Add a move for king-side castling
-
+                    // Create the new move and mark the castling flag
+                    ChessMove newMove = new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), 7), null);
+                    possibleMoves.add(newMove);
+                }
             }
 
         }

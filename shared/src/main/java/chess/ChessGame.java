@@ -99,6 +99,8 @@ public class ChessGame {
             
             // See if we are hypothetically in check
             boolean invalidMove = branch.isInCheck(teamColor);
+
+            // System.out.println(branch.getBoard().toString());
             
             if (!invalidMove) {
                 validMoves.add(moves.get(i));
@@ -143,7 +145,19 @@ public class ChessGame {
         // If promoting, change moving piece to promoted piece
         if (move.getPromotionPiece() != null) movingPiece = new ChessPiece(movingPiece.getTeamColor(), move.getPromotionPiece());
 
+        // If it is castling, move the rook too
+        if (isCastling(move) != null) {
+            // Make a new rook
+            ChessPiece newRook = new ChessPiece(movingPiece.getTeamColor(), ChessPiece.PieceType.ROOK);
+            newRook.flagAsMoved();
+
+            // Place the rook
+            board.addPiece(new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn() + (isCastling(move) == ChessPiece.PieceType.QUEEN ? 1 : -1)), newRook);
+            board.removePiece(new ChessPosition(move.getEndPosition().getRow(), (isCastling(move) == ChessPiece.PieceType.QUEEN ? 1 : 8)));
+        }
+
         // If the move is valid, make the move
+        movingPiece.flagAsMoved();
         board.addPiece(move.getEndPosition(), movingPiece);
         board.removePiece(move.getStartPosition());
 
@@ -229,5 +243,20 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return board;
+    }
+
+    /**
+     * @return which side the king is castling on, null if it is not castling
+     */
+    public ChessPiece.PieceType isCastling(ChessMove move) {
+        if (board.getPiece(move.getStartPosition()) == null) return null;
+
+        if (board.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.KING) {
+            if (Math.abs(move.getStartPosition().getColumn() - move.getEndPosition().getColumn()) > 1) {
+                return (move.getStartPosition().getColumn() > move.getEndPosition().getColumn() ? ChessPiece.PieceType.QUEEN : ChessPiece.PieceType.KING);
+            }
+        }
+
+        return null;
     }
 }
