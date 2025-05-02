@@ -245,9 +245,7 @@ class PawnMovesCalculator implements PieceMovesCalculator {
             ChessPiece leftAdjPiece = board.getPiece(leftAdj);
             if (leftAdjPiece != null && myPosition.getRow() == (forward == 1 ? 6 : 4) && leftAdjPiece.getPieceType() == ChessPiece.PieceType.PAWN
                     && leftAdjPiece.getTeamColor() != board.getPiece(myPosition).getTeamColor() && leftAdjPiece.isEnPassantable()) {
-
-                // TODO: Add the move for en passant to the left
-
+                possibleMoves.add(new ChessMove(myPosition, leftAttackPosition, null));
             }
         }
 
@@ -255,11 +253,9 @@ class PawnMovesCalculator implements PieceMovesCalculator {
         ChessPosition rightAdj = new ChessPosition(myPosition.getRow(), myPosition.getColumn()+1);
         if (rightAdj.insideBoard()) {
             ChessPiece rightAdjPiece = board.getPiece(rightAdj);
-            if (rightAdjPiece != null && myPosition.getRow() == (forward == 1 ? 6 : 4) && rightAdjPiece.getPieceType() == ChessPiece.PieceType.PAWN
+            if (rightAdjPiece != null && myPosition.getRow() == (forward == 1 ? 5 : 4) && rightAdjPiece.getPieceType() == ChessPiece.PieceType.PAWN
                     && rightAdjPiece.getTeamColor() != board.getPiece(myPosition).getTeamColor() && rightAdjPiece.isEnPassantable()) {
-
-                // TODO: Add the move for en passant to the right
-
+                possibleMoves.add(new ChessMove(myPosition, rightAttackPosition, null));
             }
         }
 

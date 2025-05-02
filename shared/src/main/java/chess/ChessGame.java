@@ -102,12 +102,15 @@ public class ChessGame {
                 branch.getBoard().removePiece(new ChessPosition(moves.get(i).getEndPosition().getRow(), (branch.isCastling(moves.get(i)) == ChessPiece.PieceType.QUEEN ? 1 : 8)));
             }
 
+            // If the move was en passant, capture the other pawn
+            if (branch.isEnPassant(moves.get(i))) branch.getBoard().removePiece(new ChessPosition(moves.get(i).getStartPosition().getRow(), moves.get(i).getEndPosition().getColumn()));
+
             // Move the piece hypothetically
             branch.getBoard().addPiece(moves.get(i).getEndPosition(), newPiece);
             
             // Make the previous space empty
             branch.getBoard().removePiece(moves.get(i).getStartPosition());
-            
+
             // See if we are hypothetically in check
             boolean invalidMove = branch.isInCheck(teamColor);
             
@@ -165,10 +168,17 @@ public class ChessGame {
             board.removePiece(new ChessPosition(move.getEndPosition().getRow(), (isCastling(move) == ChessPiece.PieceType.QUEEN ? 1 : 8)));
         }
 
+        // If the move was en passant, capture the other pawn
+        if (isEnPassant(move)) board.removePiece(new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn()));
+
         // If the move is valid, make the move
         movingPiece.flagAsMoved();
         board.addPiece(move.getEndPosition(), movingPiece);
         board.removePiece(move.getStartPosition());
+
+        // If the pawn moved 2 spaces, flag it as en passantable. If not, un-flag it
+        movingPiece.setEnPassantable(movingPiece.getPieceType() == ChessPiece.PieceType.PAWN &&
+                Math.abs(move.getEndPosition().getRow() - move.getStartPosition().getRow()) > 1);
 
         // Update team color
         teamTurn = teamTurn == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
@@ -267,5 +277,22 @@ public class ChessGame {
         }
 
         return null;
+    }
+
+    /**
+     * @return whether the move is an en passant move
+     */
+    public boolean isEnPassant(ChessMove move) {
+        if (board.getPiece(move.getStartPosition()) == null) return false;
+
+        System.out.println();
+
+        if (board.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN) {
+            return move.getStartPosition().getRow() != move.getEndPosition().getRow() &&
+                    move.getStartPosition().getColumn() != move.getEndPosition().getColumn() &&
+                    board.getPiece(move.getEndPosition()) == null;
+        }
+
+        return false;
     }
 }
