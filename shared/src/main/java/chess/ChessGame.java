@@ -29,8 +29,8 @@ public class ChessGame {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) { return true; }
+        if (obj == null || getClass() != obj.getClass()) { return false; }
         ChessGame that = (ChessGame) obj;
 
         return board.equals(that.getBoard()) && teamTurn.equals(that.getTeamTurn());
@@ -68,58 +68,68 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        // Return null if no piece is at the start position
-        if (board.getPiece(startPosition) == null) {
-            return null;
-        }
-
-        // Find the team color
-        ChessGame.TeamColor teamColor = board.getPiece(startPosition).getTeamColor();
-
-        // Find all the basic moves that this piece can make
-        ArrayList<ChessMove> moves = (ArrayList<ChessMove>) board.getPiece(startPosition).pieceMoves(board, startPosition);
-        ArrayList<ChessMove> validMoves = new ArrayList<>();
-
-        // Loop through the basic moves
-        for (int i = 0; i < moves.size(); ++i) {
-            // Create a new branch board
-            ChessGame branch = new ChessGame();
-            branch.setBoard(board);
-            
-            // Find the new piece if promoting
-            ChessPiece newPiece = moves.get(i).getPromotionPiece() == null ?
-                    branch.getBoard().getPiece(moves.get(i).getStartPosition()) :
-                    new ChessPiece(teamColor, moves.get(i).getPromotionPiece());
-
-            // If it is castling, move the rook too
-            if (branch.isCastling(moves.get(i)) != null) {
-                // Make a new rook
-                ChessPiece newRook = new ChessPiece(board.getPiece(startPosition).getTeamColor(), ChessPiece.PieceType.ROOK);
-                newRook.flagAsMoved();
-
-                // Place the rook
-                branch.getBoard().addPiece(new ChessPosition(moves.get(i).getEndPosition().getRow(), moves.get(i).getEndPosition().getColumn() + (branch.isCastling(moves.get(i)) == ChessPiece.PieceType.QUEEN ? 1 : -1)), newRook);
-                branch.getBoard().removePiece(new ChessPosition(moves.get(i).getEndPosition().getRow(), (branch.isCastling(moves.get(i)) == ChessPiece.PieceType.QUEEN ? 1 : 8)));
+            // Return null if no piece is at the start position
+            if (board.getPiece(startPosition) == null) {
+                return null;
             }
 
-            // If the move was en passant, capture the other pawn
-            if (branch.isEnPassant(moves.get(i))) branch.getBoard().removePiece(new ChessPosition(moves.get(i).getStartPosition().getRow(), moves.get(i).getEndPosition().getColumn()));
+            // Find the team color
+            ChessGame.TeamColor teamColor = board.getPiece(startPosition).getTeamColor();
 
-            // Move the piece hypothetically
-            branch.getBoard().addPiece(moves.get(i).getEndPosition(), newPiece);
-            
-            // Make the previous space empty
-            branch.getBoard().removePiece(moves.get(i).getStartPosition());
+            // Find all the basic moves that this piece can make
+            ArrayList<ChessMove> moves = (ArrayList<ChessMove>) board.getPiece(startPosition).pieceMoves(board, startPosition);
+            ArrayList<ChessMove> validMoves = new ArrayList<>();
 
-            // See if we are hypothetically in check
-            boolean invalidMove = branch.isInCheck(teamColor);
+            // Loop through the basic moves
+            for (int i = 0; i < moves.size(); ++i) {
+                // Create a new branch board
+                ChessGame branch = new ChessGame();
+                branch.setBoard(board);
 
-            if (!invalidMove) {
-                validMoves.add(moves.get(i));
+                // Find the new piece if promoting
+                ChessPiece newPiece = moves.get(i).getPromotionPiece() == null ?
+                        branch.getBoard().getPiece(moves.get(i).getStartPosition()) :
+                        new ChessPiece(teamColor, moves.get(i).getPromotionPiece());
+
+                // If it is castling, move the rook too
+                if (branch.isCastling(moves.get(i)) != null) {
+                    boolean queenSide = branch.isCastling(moves.get(i)) == ChessPiece.PieceType.QUEEN;
+
+                    // Make a new rook
+                    ChessPiece newRook = new ChessPiece(board.getPiece(startPosition).getTeamColor(), ChessPiece.PieceType.ROOK);
+                    newRook.flagAsMoved();
+
+                    int row = moves.get(i).getEndPosition().getRow();
+                    int col = moves.get(i).getEndPosition().getColumn();
+
+                    // Place the rook
+                    branch.getBoard().addPiece(new ChessPosition(row, col + (queenSide ? 1 : -1)), newRook);
+                    branch.getBoard().removePiece(new ChessPosition(row, (queenSide ? 1 : 8)));
+                }
+
+                // If the move was en passant, capture the other pawn
+                if (branch.isEnPassant(moves.get(i))) {
+                    int row = moves.get(i).getStartPosition().getRow();
+                    int col = moves.get(i).getEndPosition().getColumn();
+
+                    branch.getBoard().removePiece(new ChessPosition(row, col));
+                }
+
+                // Move the piece hypothetically
+                branch.getBoard().addPiece(moves.get(i).getEndPosition(), newPiece);
+
+                // Make the previous space empty
+                branch.getBoard().removePiece(moves.get(i).getStartPosition());
+
+                // See if we are hypothetically in check
+                boolean invalidMove = branch.isInCheck(teamColor);
+
+                if (!invalidMove) {
+                    validMoves.add(moves.get(i));
+                }
             }
-        }
-        
-        return validMoves;
+
+            return validMoves;
     }
 
     /**
@@ -130,7 +140,7 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         // Throw invalid move if there is no piece
-        if (board.getPiece(move.getStartPosition()) == null) throw new InvalidMoveException("Invalid move: no piece" );
+        if (board.getPiece(move.getStartPosition()) == null) { throw new InvalidMoveException("Invalid move: no piece" ); }
 
         // Find all valid moves for start position
         ArrayList<ChessMove> possibleMoves = (ArrayList<ChessMove>) validMoves(move.getStartPosition());
@@ -146,30 +156,33 @@ public class ChessGame {
         }
 
         // Check to make sure the moving piece matches the team color
-        if (board.getPiece(move.getStartPosition()).getTeamColor() != teamTurn) isValid = false;
+        if (board.getPiece(move.getStartPosition()).getTeamColor() != teamTurn) { isValid = false; }
 
         // If the move is not valid throw an exception
-        if (!isValid) throw new InvalidMoveException("Invalid move attempted: " + move);
+        if (!isValid) { throw new InvalidMoveException("Invalid move attempted: " + move); }
 
         // Get the piece to move
         ChessPiece movingPiece = board.getPiece(move.getStartPosition());
 
         // If promoting, change moving piece to promoted piece
-        if (move.getPromotionPiece() != null) movingPiece = new ChessPiece(movingPiece.getTeamColor(), move.getPromotionPiece());
+        if (move.getPromotionPiece() != null) { movingPiece = new ChessPiece(movingPiece.getTeamColor(), move.getPromotionPiece()); }
 
         // If it is castling, move the rook too
         if (isCastling(move) != null) {
+            // Find the direction
+            boolean queenSide = isCastling(move) == ChessPiece.PieceType.QUEEN;
+
             // Make a new rook
             ChessPiece newRook = new ChessPiece(movingPiece.getTeamColor(), ChessPiece.PieceType.ROOK);
             newRook.flagAsMoved();
 
             // Place the rook
-            board.addPiece(new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn() + (isCastling(move) == ChessPiece.PieceType.QUEEN ? 1 : -1)), newRook);
-            board.removePiece(new ChessPosition(move.getEndPosition().getRow(), (isCastling(move) == ChessPiece.PieceType.QUEEN ? 1 : 8)));
+            board.addPiece(new ChessPosition(move.getEndPosition().getRow(), move.getEndPosition().getColumn() + (queenSide ? 1 : -1)), newRook);
+            board.removePiece(new ChessPosition(move.getEndPosition().getRow(), (queenSide ? 1 : 8)));
         }
 
         // If the move was en passant, capture the other pawn
-        if (isEnPassant(move)) board.removePiece(new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn()));
+        if (isEnPassant(move)) { board.removePiece(new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn())); }
 
         // If the move is valid, make the move
         movingPiece.flagAsMoved();
@@ -212,12 +225,12 @@ public class ChessGame {
         boolean inCheck = isInCheck(teamColor);
 
         // If we aren't in check, we aren't in checkmate
-        if (!inCheck) return false;
+        if (!inCheck) { return false; }
 
         // If we are in check, see if we have any valid moves
         ArrayList<ChessPosition> myPieces = board.findAllPieces(teamColor);
         for (int i = 0; i < myPieces.size(); ++i) {
-            if (!validMoves(myPieces.get(i)).isEmpty()) return false;
+            if (!validMoves(myPieces.get(i)).isEmpty()) { return false; }
         }
 
         // If no valid moves were found, we are in checkmate
@@ -236,12 +249,12 @@ public class ChessGame {
         boolean inCheck = isInCheck(teamColor);
 
         // If we are in check, we aren't in stalemate
-        if (inCheck) return false;
+        if (inCheck) { return false; }
 
         // If we are in check, see if we have any valid moves
         ArrayList<ChessPosition> myPieces = board.findAllPieces(teamColor);
         for (int i = 0; i < myPieces.size(); ++i) {
-            if (!validMoves(myPieces.get(i)).isEmpty()) return false;
+            if (!validMoves(myPieces.get(i)).isEmpty()) { return false; }
         }
 
         // If no valid moves were found, we are in stalemate
@@ -271,11 +284,12 @@ public class ChessGame {
      * @return which side the king is castling on, null if it is not castling
      */
     public ChessPiece.PieceType isCastling(ChessMove move) {
-        if (board.getPiece(move.getStartPosition()) == null) return null;
+        if (board.getPiece(move.getStartPosition()) == null) { return null; }
 
         if (board.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.KING) {
             if (Math.abs(move.getStartPosition().getColumn() - move.getEndPosition().getColumn()) > 1) {
-                return (move.getStartPosition().getColumn() > move.getEndPosition().getColumn() ? ChessPiece.PieceType.QUEEN : ChessPiece.PieceType.KING);
+                return (move.getStartPosition().getColumn() > move.getEndPosition().getColumn() ?
+                        ChessPiece.PieceType.QUEEN : ChessPiece.PieceType.KING);
             }
         }
 
@@ -286,7 +300,7 @@ public class ChessGame {
      * @return whether the move is an en passant move
      */
     public boolean isEnPassant(ChessMove move) {
-        if (board.getPiece(move.getStartPosition()) == null) return false;
+        if (board.getPiece(move.getStartPosition()) == null) { return false; }
 
         if (board.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN) {
             return move.getStartPosition().getRow() != move.getEndPosition().getRow() &&

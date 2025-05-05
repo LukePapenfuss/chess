@@ -24,7 +24,9 @@ class KingMovesCalculator implements PieceMovesCalculator {
             if (!newPosition.insideBoard()) { continue; }
 
             // If the space is occupied by a piece of the same color, skip it
-            if (board.getPiece(newPosition) != null && board.getPiece(myPosition).getTeamColor() == board.getPiece(newPosition).getTeamColor()) { continue; }
+            if (board.getPiece(newPosition) != null && board.getPiece(myPosition).getTeamColor() == board.getPiece(newPosition).getTeamColor()) {
+                continue;
+            }
 
             // Add this new position to the possible moves
             possibleMoves.add(new ChessMove(myPosition, newPosition, null));
@@ -32,7 +34,11 @@ class KingMovesCalculator implements PieceMovesCalculator {
 
         // Castling
         if(!board.getPiece(myPosition).ifMoved() && myPosition.getColumn() == 5) {
-            ChessGame.TeamColor opposingTeam = board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+            ChessPiece myPiece = board.getPiece(myPosition);
+
+            // Switch the color to find the opposing color
+            ChessGame.TeamColor opposingTeam = myPiece.getTeamColor() ==
+                    ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
 
             // If the king hasn't moved, check if the rooks haven't moved.
             ChessPiece leftCorner = board.getPiece(new ChessPosition(myPosition.getRow(), 1));
@@ -80,29 +86,9 @@ class BishopMovesCalculator implements PieceMovesCalculator {
                 {1,1},{-1,1},{-1,-1},{1,-1}
         };
 
-        for (int i = 0; i < directions.length; ++i) {
-            ChessPosition newPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
-            boolean capturing = false;
-            do {
-                // Get Position NE one square
-                newPosition = new ChessPosition(newPosition.getRow() + directions[i][0], newPosition.getColumn() + directions[i][1]);
-
-                // If the space is outside the chess board, end the diagonal
-                if (!newPosition.insideBoard()) { break; }
-
-                // If the space is occupied by a piece of the same color, end the diagonal
-                if (board.getPiece(newPosition) != null) {
-                    if (board.getPiece(myPosition).getTeamColor() == board.getPiece(newPosition).getTeamColor()) {
-                        break;
-                    } else {
-                        capturing = true;
-                    }
-                }
-
-                // Add this new position to the possible moves
-                possibleMoves.add(new ChessMove(myPosition, newPosition, null));
-            } while ( !capturing );
-        }
+        // Find all the moves in each direction
+        LineMoveCalculator newLineMoves = new LineMoveCalculator(directions);
+        possibleMoves = newLineMoves.getPositions(myPosition, board);
 
         return possibleMoves;
     }
@@ -116,29 +102,10 @@ class RookMovesCalculator implements PieceMovesCalculator {
                 {1,0},{-1,0},{0,1},{0,-1}
         };
 
-        for (int i = 0; i < directions.length; ++i) {
-            ChessPosition newPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
-            boolean capturing = false;
-            do {
-                // Get Position NE one square
-                newPosition = new ChessPosition(newPosition.getRow() + directions[i][0], newPosition.getColumn() + directions[i][1]);
 
-                // If the space is outside the chess board, end the diagonal
-                if (!newPosition.insideBoard()) { break; }
-
-                // If the space is occupied by a piece of the same color, end the diagonal
-                if (board.getPiece(newPosition) != null) {
-                    if (board.getPiece(myPosition).getTeamColor() == board.getPiece(newPosition).getTeamColor()) {
-                        break;
-                    } else {
-                        capturing = true;
-                    }
-                }
-
-                // Add this new position to the possible moves
-                possibleMoves.add(new ChessMove(myPosition, newPosition, null));
-            } while ( !capturing );
-        }
+        // Find all the moves in each direction
+        LineMoveCalculator newLineMoves = new LineMoveCalculator(directions);
+        possibleMoves = newLineMoves.getPositions(myPosition, board);
 
         return possibleMoves;
     }
@@ -152,29 +119,9 @@ class QueenMovesCalculator implements PieceMovesCalculator {
                 {1,0},{-1,0},{0,1},{0,-1},{1,1},{-1,1},{-1,-1},{1,-1}
         };
 
-        for (int i = 0; i < directions.length; ++i) {
-            ChessPosition newPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
-            boolean capturing = false;
-            do {
-                // Get Position NE one square
-                newPosition = new ChessPosition(newPosition.getRow() + directions[i][0], newPosition.getColumn() + directions[i][1]);
-
-                // If the space is outside the chess board, end the diagonal
-                if (!newPosition.insideBoard()) { break; }
-
-                // If the space is occupied by a piece of the same color, end the diagonal
-                if (board.getPiece(newPosition) != null) {
-                    if (board.getPiece(myPosition).getTeamColor() == board.getPiece(newPosition).getTeamColor()) {
-                        break;
-                    } else {
-                        capturing = true;
-                    }
-                }
-
-                // Add this new position to the possible moves
-                possibleMoves.add(new ChessMove(myPosition, newPosition, null));
-            } while ( !capturing );
-        }
+        // Find all the moves in each direction
+        LineMoveCalculator newLineMoves = new LineMoveCalculator(directions);
+        possibleMoves = newLineMoves.getPositions(myPosition, board);
 
         return possibleMoves;
     }
@@ -196,7 +143,11 @@ class KnightMovesCalculator implements PieceMovesCalculator {
             if (!newPosition.insideBoard()) { continue; }
 
             // If the space is occupied by a piece of the same color, skip it
-            if (board.getPiece(newPosition) != null && board.getPiece(myPosition).getTeamColor() == board.getPiece(newPosition).getTeamColor()) { continue; }
+            if (board.getPiece(newPosition) != null) {
+                if (board.getPiece(myPosition).getTeamColor() == board.getPiece(newPosition).getTeamColor()) {
+                    continue;
+                }
+            }
 
             // Add this new position to the possible moves
             possibleMoves.add(new ChessMove(myPosition, newPosition, null));
@@ -221,22 +172,28 @@ class PawnMovesCalculator implements PieceMovesCalculator {
         }
 
         // Move forward two spaces if possible
-        ChessPosition forward2Position = new ChessPosition(myPosition.getRow() + 2*forward, myPosition.getColumn());
-        if (myPosition.getRow() == (forward == 1 ? 2 : 7) && forward2Position.insideBoard() && board.getPiece(forwardPosition) == null && board.getPiece(forward2Position) == null) {
-            // Add this new position to the possible moves
-            possibleMoves.add(new ChessMove(myPosition, forward2Position, null));
+        ChessPosition forward2Position = new ChessPosition(myPosition.getRow() + 2 * forward, myPosition.getColumn());
+        if (myPosition.getRow() == (forward == 1 ? 2 : 7) && forward2Position.insideBoard()) {
+            if (board.getPiece(forwardPosition) == null && board.getPiece(forward2Position) == null) {
+                // Add this new position to the possible moves
+                possibleMoves.add(new ChessMove(myPosition, forward2Position, null));
+            }
         }
 
         // Diagonal Attacking
         ChessPosition leftAttackPosition = new ChessPosition(myPosition.getRow() + forward, myPosition.getColumn() - 1);
         ChessPosition rightAttackPosition = new ChessPosition(myPosition.getRow() + forward, myPosition.getColumn() + 1);
-        if (leftAttackPosition.insideBoard() && board.getPiece(leftAttackPosition) != null && board.getPiece(myPosition).getTeamColor() != board.getPiece(leftAttackPosition).getTeamColor()) {
-            // Add this new position to the possible moves
-            possibleMoves.add(new ChessMove(myPosition, leftAttackPosition, null));
+        if (leftAttackPosition.insideBoard() && board.getPiece(leftAttackPosition) != null) {
+            if (board.getPiece(myPosition).getTeamColor() != board.getPiece(leftAttackPosition).getTeamColor()) {
+                // Add this new position to the possible moves
+                possibleMoves.add(new ChessMove(myPosition, leftAttackPosition, null));
+            }
         }
-        if (rightAttackPosition.insideBoard() && board.getPiece(rightAttackPosition) != null && board.getPiece(myPosition).getTeamColor() != board.getPiece(rightAttackPosition).getTeamColor()) {
-            // Add this new position to the possible moves
-            possibleMoves.add(new ChessMove(myPosition, rightAttackPosition, null));
+        if (rightAttackPosition.insideBoard() && board.getPiece(rightAttackPosition) != null) {
+            if (board.getPiece(myPosition).getTeamColor() != board.getPiece(rightAttackPosition).getTeamColor()) {
+                // Add this new position to the possible moves
+                possibleMoves.add(new ChessMove(myPosition, rightAttackPosition, null));
+            }
         }
 
         // En Passant to the left
@@ -264,10 +221,13 @@ class PawnMovesCalculator implements PieceMovesCalculator {
         ArrayList<ChessMove> newPossibleMoves = new ArrayList<>();
         for (int i = 0; i < possibleMoves.toArray().length; ++i) {
             if(possibleMoves.get(i).getEndPosition().getRow() == (forward == 1 ? 8 : 1)) {
-                newPossibleMoves.add(new ChessMove(possibleMoves.get(i).getStartPosition(), possibleMoves.get(i).getEndPosition(), ChessPiece.PieceType.QUEEN));
-                newPossibleMoves.add(new ChessMove(possibleMoves.get(i).getStartPosition(), possibleMoves.get(i).getEndPosition(), ChessPiece.PieceType.ROOK));
-                newPossibleMoves.add(new ChessMove(possibleMoves.get(i).getStartPosition(), possibleMoves.get(i).getEndPosition(), ChessPiece.PieceType.BISHOP));
-                newPossibleMoves.add(new ChessMove(possibleMoves.get(i).getStartPosition(), possibleMoves.get(i).getEndPosition(), ChessPiece.PieceType.KNIGHT));
+                ChessPosition start = possibleMoves.get(i).getStartPosition();
+                ChessPosition end = possibleMoves.get(i).getEndPosition();
+
+                newPossibleMoves.add(new ChessMove(start, end, ChessPiece.PieceType.QUEEN));
+                newPossibleMoves.add(new ChessMove(start, end, ChessPiece.PieceType.ROOK));
+                newPossibleMoves.add(new ChessMove(start, end, ChessPiece.PieceType.BISHOP));
+                newPossibleMoves.add(new ChessMove(start, end, ChessPiece.PieceType.KNIGHT));
             } else {
                 newPossibleMoves.add(possibleMoves.get(i));
             }

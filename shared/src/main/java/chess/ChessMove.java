@@ -38,10 +38,15 @@ public class ChessMove {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) { return true; }
+        if (obj == null || getClass() != obj.getClass()) { return false; }
         ChessMove that = (ChessMove) obj;
-        return startPosition.equals(that.getStartPosition()) && endPosition.equals(that.getEndPosition()) && promotionPiece == that.getPromotionPiece();
+
+        // See if the positions are the same
+        boolean samePositions = startPosition.equals(that.getStartPosition()) && endPosition.equals(that.getEndPosition());
+
+        // If positions are the same, check the promotion piece too
+        return samePositions && promotionPiece == that.getPromotionPiece();
     }
 
     /**

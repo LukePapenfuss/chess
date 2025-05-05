@@ -47,8 +47,8 @@ public class ChessBoard {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) { return true; }
+        if (obj == null || getClass() != obj.getClass()) { return false; }
         ChessBoard that = (ChessBoard) obj;
 
         // Check if all pieces are the same
@@ -162,7 +162,7 @@ public class ChessBoard {
             for (int j = 0; j < squares[i].length; ++j) {
                 ChessPosition pos = new ChessPosition(i + 1, j + 1);
 
-                if(newBoard.getPiece(pos) == null) continue;
+                if(newBoard.getPiece(pos) == null) { continue; }
 
                 ChessPiece newPiece = new ChessPiece(newBoard.getPiece(pos).getTeamColor(), newBoard.getPiece(pos).getPieceType());
 
@@ -253,24 +253,24 @@ public class ChessBoard {
      * @return whether the position is attacked
      */
     public boolean positionIsAttacked(ChessPosition position, ChessGame.TeamColor attackingTeam) {
-        // Loop through the board to find pieces of the opposing team
-        for (int i = 0; i < squares.length; ++i) {
-            for (int j = 0; j < squares[i].length; ++j) {
-                ChessPosition currentPosition = new ChessPosition(i+1,j+1);
-                ChessPiece piece = getPiece(currentPosition);
+        // Find all the pieces of the attacking team
+        ArrayList<ChessPosition> pieces = findAllPieces(attackingTeam);
 
-                // If the piece exists and is the attacking team, find its moves.
-                if (piece != null && piece.getTeamColor() == attackingTeam) {
-                    ArrayList<ChessMove> pieceMoves = (ArrayList<ChessMove>) piece.pieceMoves(this, currentPosition);
+        // Loop through each piece's moves to determine if the position is attacked
+        for (int i = 0; i < pieces.size(); ++i){
+            ChessPosition currentPosition = pieces.get(i);
+            ChessPiece piece = getPiece(currentPosition);
 
-                    // Loop through all of this piece's moves. If it's end position is my position, we are attacked
-                    for (int k = 0; k < pieceMoves.size(); k++) {
-                        if (position.equals(pieceMoves.get(k).getEndPosition())) {
-                            return true;
-                        }
+            // If the piece exists and is the attacking team, find its moves.
+            if (piece != null && piece.getTeamColor() == attackingTeam) {
+                ArrayList<ChessMove> pieceMoves = (ArrayList<ChessMove>) piece.pieceMoves(this, currentPosition);
+
+                // Loop through all of this piece's moves. If it's end position is my position, we are attacked
+                for (int k = 0; k < pieceMoves.size(); k++) {
+                    if (position.equals(pieceMoves.get(k).getEndPosition())) {
+                        return true;
                     }
                 }
-
             }
         }
 
@@ -283,7 +283,7 @@ public class ChessBoard {
     public void resetEnPassant() {
         for (int i = 0; i < squares.length; ++i) {
             for (int j = 0; j < squares[i].length; ++j) {
-                if (getPiece(new ChessPosition(i + 1, j + 1)) == null) continue;
+                if (getPiece(new ChessPosition(i + 1, j + 1)) == null) { continue; }
                 getPiece(new ChessPosition(i + 1, j + 1)).setEnPassantable(false);
             }
         }
